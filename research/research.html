@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인터랙티브 연구 성과 보고서 | AI 편향성 완화 기술 개발</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Glassmorphism (Vibrant Indigo on Frosted Glass) -->
+    <!-- Application Structure Plan: The thematic structure is maintained for intuitive navigation. The visual layer is transformed using Glassmorphism to create a modern, airy, and three-dimensional feel. Cards and the navigation bar have a frosted glass effect, appearing to float over a soft gradient background. This enhances visual appeal and creates a clear hierarchy between the background and the content, focusing the user's attention. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: All Sections -> Goal: Organize/Inform -> Viz: Glassmorphic Cards -> Interaction: None -> Justification: Replaces solid cards with semi-transparent, blurred panels. This adds visual depth and a contemporary aesthetic without distracting from the content. The subtle border and shadow enhance the "glass" illusion. -> Method: HTML/Tailwind/Custom CSS.
+        - Report Info: Key Metric Cards -> Goal: Inform -> Viz: Glassmorphic Stat Cards -> Interaction: None -> Justification: Key numbers are presented on smaller glass panels, making them stand out as important, glanceable data points. -> Method: HTML/Tailwind/Custom CSS.
+        - Report Info: Model Performance Comparison -> Goal: Compare -> Viz: Glassmorphic Bar Chart -> Interaction: Hover tooltips -> Justification: The chart is housed within a larger glass panel. The chart's colors are updated to a vibrant indigo and gray palette to complement the overall aesthetic, ensuring data remains clear and visually engaging. -> Library: Chart.js.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 50vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 450px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s, border-color 0.3s;
+        }
+        .nav-link.active {
+            color: #4f46e5; /* Indigo */
+            border-bottom-color: #4f46e5;
+            font-weight: 700;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-cyan-50 to-blue-200 text-slate-800">
+
+    <header class="bg-white/60 backdrop-blur-lg sticky top-0 z-50 border-b border-white/30">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <span class="text-xl font-bold text-indigo-700">AI Fairness Report</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#overview" class="nav-link text-gray-600 hover:text-indigo-600 px-3 py-2 text-sm font-medium border-b-2 border-transparent">개요</a>
+                        <a href="#context" class="nav-link text-gray-600 hover:text-indigo-600 px-3 py-2 text-sm font-medium border-b-2 border-transparent">연구의 맥락</a>
+                        <a href="#approach" class="nav-link text-gray-600 hover:text-indigo-600 px-3 py-2 text-sm font-medium border-b-2 border-transparent">접근 방식</a>
+                        <a href="#results" class="nav-link text-gray-600 hover:text-indigo-600 px-3 py-2 text-sm font-medium border-b-2 border-transparent">핵심 성과</a>
+                        <a href="#future" class="nav-link text-gray-600 hover:text-indigo-600 px-3 py-2 text-sm font-medium border-b-2 border-transparent">결론 및 제언</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="overview" class="py-16 sm:py-24">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h1 class="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">차세대 인공지능 모델의 편향성 완화 기술 개발</h1>
+                <p class="mt-6 max-w-3xl mx-auto text-lg text-slate-700">지난 12개월간 수행한 연구 과제의 주요 내용과 성과를 정리한 인터랙티브 보고서입니다.</p>
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                    <div class="glass-card p-6 rounded-2xl">
+                        <h3 class="mt-4 text-lg font-semibold text-slate-800">연구 기간</h3>
+                        <p class="mt-1 text-slate-600">2023.09.01 ~ 2024.08.31</p>
+                    </div>
+                    <div class="glass-card p-6 rounded-2xl">
+                        <h3 class="mt-4 text-lg font-semibold text-slate-800">연구진</h3>
+                        <p class="mt-1 text-slate-600">박서연 (연구책임자) 외 3인</p>
+                    </div>
+                    <div class="glass-card p-6 rounded-2xl">
+                        <h3 class="mt-4 text-lg font-semibold text-slate-800">핵심 목표</h3>
+                        <p class="mt-1 text-slate-600">범용 AI 편향성 완화 프레임워크 개발</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="context" class="py-16 sm:py-24">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">연구의 맥락: 왜 중요한가?</h2>
+                    <p class="mt-4 text-lg text-slate-700">본 섹션에서는 연구의 출발점이 된 배경과 우리가 달성하고자 했던 구체적인 목표를 설명합니다.</p>
+                </div>
+                <div class="mt-16 grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <div class="glass-card p-8 rounded-2xl">
+                        <h3 class="text-2xl font-bold text-slate-800">연구 배경 및 필요성</h3>
+                        <p class="mt-4 text-slate-600">인공지능 기술이 사회 전반으로 확산되면서, 데이터에 내재된 편향이 모델에 학습되어 사회적 불평등을 심화시키는 문제가 대두되었습니다. 기존 편향성 완화 연구는 특정 데이터셋이나 언어에 국한되는 한계를 보여, 범용적으로 적용 가능한 새로운 기술의 필요성이 절실했습니다.</p>
+                    </div>
+                    <div class="glass-card p-8 rounded-2xl">
+                        <h3 class="text-2xl font-bold text-slate-800">연구 목적과 세부 목표</h3>
+                        <p class="mt-4 text-slate-600">본 연구의 최종 목적은 다양한 데이터 유형과 언어 모델에 적용 가능한 **범용 AI 편향성 완화 프레임워크를 개발**하는 것입니다. 이를 위해 3가지 세부 목표를 설정했습니다.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="approach" class="py-16 sm:py-24">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">우리의 접근 방식</h2>
+                    <p class="mt-4 text-lg text-slate-700">체계적인 연구 추진 체계와 핵심 방법론, 그리고 활용된 데이터를 소개합니다.</p>
+                </div>
+                <div class="mt-16 glass-card p-8 md:p-12 rounded-2xl">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-800 mb-6">연구 추진 체계</h3>
+                            <div class="relative">
+                                <div class="border-l-2 border-indigo-300 ml-4">
+                                    <div class="mb-8 pl-8">
+                                        <div class="absolute w-8 h-8 bg-indigo-500 rounded-full -left-4 border-4 border-white/80"></div>
+                                        <h4 class="font-semibold">1. 문헌 연구 및 분석</h4>
+                                    </div>
+                                    <div class="mb-8 pl-8">
+                                        <div class="absolute w-8 h-8 bg-indigo-500 rounded-full -left-4 border-4 border-white/80"></div>
+                                        <h4 class="font-semibold">2. 핵심 알고리즘 개발</h4>
+                                    </div>
+                                    <div class="mb-8 pl-8">
+                                        <div class="absolute w-8 h-8 bg-indigo-500 rounded-full -left-4 border-4 border-white/80"></div>
+                                        <h4 class="font-semibold">3. 프로토타입 구현</h4>
+                                    </div>
+                                    <div class="pl-8">
+                                        <div class="absolute w-8 h-8 bg-indigo-500 rounded-full -left-4 border-4 border-white/80"></div>
+                                        <h4 class="font-semibold">4. 결과 분석 및 고도화</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-800 mb-6">핵심 방법론 및 데이터</h3>
+                            <div class="space-y-6">
+                                <div class="glass-card p-4 rounded-lg">
+                                    <h4 class="font-semibold text-slate-700">통계적 패리티 분석 & 적대적 학습</h4>
+                                    <p class="text-sm text-slate-600">편향을 정량화하고 모델 학습을 억제하는 두 가지 핵심 방법론을 적용했습니다.</p>
+                                </div>
+                                <div class="glass-card p-4 rounded-lg">
+                                    <h4 class="font-semibold text-slate-700">공개 데이터셋 활용</h4>
+                                    <p class="text-sm text-slate-600">Adult, COMPAS 등 공개 데이터셋과 AIF360 분석 도구를 사용하여 연구의 신뢰도를 높였습니다.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="results" class="py-16 sm:py-24">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">주요 연구 성과</h2>
+                    <p class="mt-4 text-lg text-slate-700">연구를 통해 달성한 정량적 성과와 핵심적인 실험 결과를 시각화하여 보여드립니다.</p>
+                </div>
+                <div class="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
+                    <div class="glass-card p-8 rounded-2xl">
+                        <p class="text-4xl font-bold text-indigo-600">2<span class="text-2xl font-medium text-slate-500">건</span></p>
+                        <p class="mt-2 text-lg font-medium text-slate-700">SCI(E)급 논문 게재</p>
+                    </div>
+                    <div class="glass-card p-8 rounded-2xl">
+                        <p class="text-4xl font-bold text-indigo-600">3<span class="text-2xl font-medium text-slate-500">건</span></p>
+                        <p class="mt-2 text-lg font-medium text-slate-700">국내 특허 출원</p>
+                    </div>
+                    <div class="glass-card p-8 rounded-2xl">
+                        <p class="text-4xl font-bold text-indigo-600">4<span class="text-2xl font-medium text-slate-500">건</span></p>
+                        <p class="mt-2 text-lg font-medium text-slate-700">국제 학술대회 발표</p>
+                    </div>
+                </div>
+                <div class="mt-20 glass-card p-8 rounded-2xl">
+                    <h3 class="text-2xl font-bold text-center text-slate-800">핵심 결과: 모델 성능 비교</h3>
+                    <p class="mt-4 max-w-2xl mx-auto text-center text-slate-600">제안 모델(Ours)은 기존 모델(Baseline) 대비 **편향성 지표(Bias Score)를 크게 낮추면서도, 모델 정확도(Accuracy)는 유사한 수준을 유지**하는 우수한 성능을 보였습니다.</p>
+                    <div class="mt-8 chart-container">
+                        <canvas id="resultsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="future" class="py-16 sm:py-24">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">결론 및 향후 방향</h2>
+                    <p class="mt-4 text-lg text-slate-700">연구의 한계점을 되짚어보고, 앞으로 나아갈 방향과 기술적 제언을 공유합니다.</p>
+                </div>
+                <div class="mt-16 grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <div class="glass-card p-8 rounded-2xl">
+                        <h3 class="text-2xl font-bold text-slate-800">한계점 및 개선 방안</h3>
+                        <ul class="mt-6 space-y-4 list-disc list-inside text-slate-600">
+                            <li><strong class="font-semibold text-slate-700">일반화 가능성:</strong> 타 분야로의 추가 검증 필요</li>
+                            <li><strong class="font-semibold text-slate-700">계산 복잡도:</strong> 실시간 처리를 위한 알고리즘 효율성 증대</li>
+                            <li><strong class="font-semibold text-slate-700">지표의 포괄성:</strong> 사회적 합의를 반영한 지표 고도화 요구</li>
+                        </ul>
+                    </div>
+                    <div class="glass-card p-8 rounded-2xl">
+                        <h3 class="text-2xl font-bold text-slate-800">향후 연구 방향 및 제언</h3>
+                        <ul class="mt-6 space-y-4 list-disc list-inside text-slate-600">
+                            <li><strong class="font-semibold text-slate-700">XAI 기술 접목:</strong> 편향성 완화 과정의 설명가능성 확보</li>
+                            <li><strong class="font-semibold text-slate-700">실증 서비스 적용:</strong> 산업계 협력을 통한 현장 효과성 검증</li>
+                            <li><strong class="font-semibold text-slate-700">정책 제언:</strong> 국가 AI 윤리 가이드라인에 연구 결과 반영</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-900/80 text-white">
+        <div class="container mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center">
+            <p>&copy; 2024 AI Fairness Research Lab. All Rights Reserved.</p>
+            <p class="mt-2 text-sm text-slate-400">본 보고서는 연구 과제 성과 공유를 위해 제작되었습니다.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chartCtx = document.getElementById('resultsChart').getContext('2d');
+            const resultsChart = new Chart(chartCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Baseline Model A', 'Baseline Model B', '제안 모델 (Ours)'],
+                    datasets: [{
+                        label: '정확도 (Accuracy)',
+                        data: [92.5, 91.8, 92.1],
+                        backgroundColor: 'rgba(79, 70, 229, 0.7)', // Indigo
+                        borderColor: 'rgba(79, 70, 229, 1)',
+                        borderWidth: 1,
+                        yAxisID: 'y'
+                    }, {
+                        label: '편향성 지표 (Bias Score)',
+                        data: [0.88, 0.85, 0.66],
+                        backgroundColor: 'rgba(100, 116, 139, 0.7)', // Slate
+                        borderColor: 'rgba(100, 116, 139, 1)',
+                        borderWidth: 1,
+                        yAxisID: 'y1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: '#334155'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed.y !== null) {
+                                        if (context.dataset.label === '정확도 (Accuracy)') {
+                                            label += context.parsed.y + '%';
+                                        } else {
+                                            label += context.parsed.y;
+                                        }
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#334155', font: { weight: '500' } }
+                        },
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: '정확도 (%)',
+                                color: 'rgba(79, 70, 229, 1)',
+                                font: { weight: 'bold' }
+                            },
+                            min: 80,
+                            max: 100,
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                            ticks: { color: '#475569' }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: '편향성 지표 (낮을수록 좋음)',
+                                color: '#475569',
+                                font: { weight: 'bold' }
+                            },
+                            min: 0,
+                            max: 1,
+                            grid: { drawOnChartArea: false },
+                            ticks: { color: '#475569' }
+                        }
+                    }
+                }
+            });
+
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.5
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === `#${id}`) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>
