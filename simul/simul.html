@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>화학 로켓 발사 시뮬레이션</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        /* 로켓 아이콘 애니메이션 */
+        @keyframes rocket-fly {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-100px); opacity: 0; }
+        }
+        .rocket-animation {
+            animation: rocket-fly 1.5s ease-in forwards;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center p-4">
+    <div class="container mx-auto max-w-4xl bg-gray-800 rounded-2xl shadow-2xl p-6 md:p-10 space-y-8">
+
+        <!-- 헤더 -->
+        <header class="text-center">
+            <h1 class="text-3xl md:text-4xl font-bold text-cyan-400">🚀 화학 로켓 발사 시뮬레이션</h1>
+            <p class="mt-3 text-gray-300">나만의 로켓을 설계하고 발사하며 우주 탐사의 원리를 배워보세요!</p>
+        </header>
+
+        <!-- 1단계: 로켓 설계 -->
+        <section id="rocket-builder" class="bg-gray-700/50 p-6 rounded-xl">
+            <h2 class="text-2xl font-bold mb-4 border-l-4 border-cyan-400 pl-4">1단계: 로켓 설계</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <label for="fuel" class="block mb-2 font-semibold text-gray-200">연료 (Fuel) 선택</label>
+                    <select id="fuel" class="w-full p-3 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+                        <option value="LH2">액체수소 (Liquid Hydrogen, LH₂)</option>
+                        <option value="Kerosene">케로신 (Kerosene, RP-1)</option>
+                        <option value="Methane">액체메탄 (Liquid Methane, CH₄)</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="oxidizer" class="block mb-2 font-semibold text-gray-200">산화제 (Oxidizer) 선택</label>
+                    <select id="oxidizer" class="w-full p-3 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+                        <option value="LOX">액체산소 (Liquid Oxygen, LOX)</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2단계: 발사 -->
+        <section class="text-center">
+             <h2 class="text-2xl font-bold mb-4 border-l-4 border-cyan-400 pl-4 inline-block">2단계: 발사</h2>
+             <div class="mt-4 relative inline-block">
+                <div id="rocket-icon" class="text-5xl absolute bottom-full left-1/2 -translate-x-1/2"></div>
+                <button id="launch-button" class="bg-cyan-500 hover:bg-cyan-600 text-gray-900 font-bold py-4 px-10 rounded-full text-xl transition-transform transform hover:scale-105 shadow-lg shadow-cyan-500/30">
+                    발사 (LAUNCH)
+                </button>
+             </div>
+        </section>
+
+        <!-- 3단계: 시뮬레이션 결과 -->
+        <section id="results" class="bg-gray-700/50 p-6 rounded-xl hidden">
+            <h2 class="text-2xl font-bold mb-4 border-l-4 border-cyan-400 pl-4">3단계: 시뮬레이션 결과</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- 좌측: 데이터 및 분석 -->
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-xl font-semibold text-cyan-300 mb-2">화학 반응식</h3>
+                        <p id="equation" class="bg-gray-900 p-3 rounded-lg font-mono text-center"></p>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-cyan-300 mb-2">로켓 성능 데이터</h3>
+                        <div id="stats" class="grid grid-cols-2 gap-4 text-center">
+                            <!-- 데이터는 JS로 채워집니다 -->
+                        </div>
+                    </div>
+                     <div>
+                        <h3 class="text-xl font-semibold text-cyan-300 mb-2">결과 분석</h3>
+                        <p id="analysis" class="text-gray-300 text-sm leading-relaxed"></p>
+                    </div>
+                </div>
+                <!-- 우측: 그래프 -->
+                <div>
+                    <h3 class="text-xl font-semibold text-cyan-300 mb-2 text-center">고도 변화 그래프</h3>
+                    <div class="bg-gray-900 p-2 rounded-lg aspect-square">
+                        <canvas id="altitude-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // 로켓 성능 데이터
+        const rocketData = {
+            'LH2_LOX': {
+                name: '액체수소 (LH₂) + 액체산소 (LOX)',
+                equation: '2H₂ + O₂ → 2H₂O',
+                thrust: 750000, // N
+                isp: 450, // s
+                maxAltitude: 350, // km
+                burnTime: 180, // s
+                analysis: '수소는 가장 가벼운 원소라 연소 시 가장 높은 효율(비추력)을 보입니다. 같은 무게의 연료로 가장 멀리 갈 수 있죠. 아폴로 계획의 새턴 V 로켓과 NASA의 차세대 SLS 로켓의 핵심 연료입니다. 다만, 밀도가 매우 낮아 거대한 연료 탱크가 필요하고 극저온 상태를 유지해야 하는 기술적 어려움이 있습니다.'
+            },
+            'Kerosene_LOX': {
+                name: '케로신 (RP-1) + 액체산소 (LOX)',
+                equation: '2C₁₂H₂₆ + 37O₂ → 24CO₂ + 26H₂O',
+                thrust: 900000, // N
+                isp: 350, // s
+                maxAltitude: 280, // km
+                burnTime: 165, // s
+                analysis: '케로신(등유)은 밀도가 높아 수소보다 작은 탱크에 많은 양을 저장할 수 있고, 상온 보관이 가능해 다루기 쉽습니다. 강력한 추력을 내는 데 유리하여 스페이스X의 팰컨 9, 러시아의 소유즈, 그리고 우리나라의 누리호 1단 로켓에 사용됩니다. 하지만 효율은 수소보다 낮고 연소 시 그을음이 발생합니다.'
+            },
+            'Methane_LOX': {
+                name: '액체메탄 (CH₄) + 액체산소 (LOX)',
+                equation: 'CH₄ + 2O₂ → CO₂ + 2H₂O',
+                thrust: 820000, // N
+                isp: 380, // s
+                maxAltitude: 310, // km
+                burnTime: 170, // s
+                analysis: '메탄은 수소의 높은 효율과 케로신의 높은 밀도 및 취급 용이성의 장점을 절충한 차세대 연료입니다. 연소 후 엔진에 남는 찌꺼기가 거의 없어 재사용 로켓에 매우 유리합니다. 스페이스X의 스타십과 블루 오리진의 뉴 글렌 등 미래의 심우주 탐사 로켓들이 메탄을 주력으로 개발하고 있습니다.'
+            }
+        };
+
+        const launchButton = document.getElementById('launch-button');
+        const resultsSection = document.getElementById('results');
+        const fuelSelect = document.getElementById('fuel');
+        const oxidizerSelect = document.getElementById('oxidizer');
+        const rocketIcon = document.getElementById('rocket-icon');
+
+        let chartInstance = null;
+
+        launchButton.addEventListener('click', () => {
+            // 1. 선택된 값 가져오기
+            const selectedFuel = fuelSelect.value;
+            const selectedOxidizer = oxidizerSelect.value;
+            const key = `${selectedFuel}_${selectedOxidizer}`;
+            const data = rocketData[key];
+
+            // 2. 로켓 발사 애니메이션
+            rocketIcon.innerHTML = '🚀';
+            rocketIcon.classList.add('rocket-animation');
+            setTimeout(() => {
+                rocketIcon.innerHTML = '';
+                rocketIcon.classList.remove('rocket-animation');
+            }, 1500);
+
+            // 3. 결과 섹션 표시 및 데이터 업데이트
+            resultsSection.classList.remove('hidden');
+            
+            document.getElementById('equation').textContent = data.equation;
+            document.getElementById('analysis').textContent = data.analysis;
+
+            const statsContainer = document.getElementById('stats');
+            statsContainer.innerHTML = `
+                <div class="bg-gray-800 p-3 rounded-lg">
+                    <p class="text-sm text-gray-400">총 추력</p>
+                    <p class="text-2xl font-bold text-cyan-400">${data.thrust.toLocaleString()}<span class="text-sm font-normal"> N</span></p>
+                </div>
+                <div class="bg-gray-800 p-3 rounded-lg">
+                    <p class="text-sm text-gray-400">비추력 (효율)</p>
+                    <p class="text-2xl font-bold text-cyan-400">${data.isp}<span class="text-sm font-normal"> s</span></p>
+                </div>
+                <div class="bg-gray-800 p-3 rounded-lg">
+                    <p class="text-sm text-gray-400">최대 고도</p>
+                    <p class="text-2xl font-bold text-cyan-400">${data.maxAltitude}<span class="text-sm font-normal"> km</span></p>
+                </div>
+                <div class="bg-gray-800 p-3 rounded-lg">
+                    <p class="text-sm text-gray-400">연소 시간</p>
+                    <p class="text-2xl font-bold text-cyan-400">${data.burnTime}<span class="text-sm font-normal"> s</span></p>
+                </div>
+            `;
+
+            // 4. 그래프 그리기
+            drawAltitudeChart(data);
+            
+            // 결과 섹션으로 스크롤
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // 그래프 그리는 함수
+        function drawAltitudeChart(data) {
+            const ctx = document.getElementById('altitude-chart').getContext('2d');
+            
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            const labels = [];
+            const altitudeData = [];
+            const duration = data.burnTime;
+            const steps = 30; // 그래프를 부드럽게 만들기 위한 단계 수
+
+            for (let i = 0; i <= steps; i++) {
+                const time = (duration / steps) * i;
+                labels.push(time.toFixed(0));
+                // 단순화된 포물선 궤적 모델 (실제 물리와는 다름)
+                const altitude = - (data.maxAltitude / (duration * duration / 4)) * (time * (time - duration));
+                altitudeData.push(altitude.toFixed(2));
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '고도 (km)',
+                        data: altitudeData,
+                        borderColor: 'rgb(34, 211, 238)',
+                        backgroundColor: 'rgba(34, 211, 238, 0.2)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: (tooltipItems) => `시간: ${tooltipItems[0].label}초`,
+                                label: (tooltipItem) => `고도: ${tooltipItem.raw} km`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: '시간 (초)',
+                                color: '#9ca3af'
+                            },
+                            ticks: { color: '#9ca3af' },
+                            grid: { color: 'rgba(107, 114, 128, 0.3)' }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '고도 (km)',
+                                color: '#9ca3af'
+                            },
+                            ticks: { color: '#9ca3af' },
+                            grid: { color: 'rgba(107, 114, 128, 0.3)' }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+    <!-- Chart.js 라이브러리 추가 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+</html>
